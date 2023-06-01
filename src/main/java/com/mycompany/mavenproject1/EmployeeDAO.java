@@ -36,6 +36,17 @@ public class EmployeeDAO {
         return rs;
     }
 
+    public void editEmployee(Employee employee, String id) {
+        String[] values = { employee.getFirstName(), employee.getLastName(), employee.getGender(),
+                String.valueOf(employee.getAge()), employee.getPhoneNumber(), employee.getDepartment() };
+        try {
+            conn.updateData(values, id);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            conn.disconnect();
+        }
+    }
 
     public void close() {
         conn.disconnect();
