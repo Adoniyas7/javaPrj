@@ -117,6 +117,11 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         editButton.setText("Edit");
+        editButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonActionPerformed(evt);
+            }
+        });
 
         clearButton.setText("Clear");
         clearButton.addActionListener(new java.awt.event.ActionListener() {
@@ -234,6 +239,11 @@ public class MainFrame extends javax.swing.JFrame {
             }
         ));
         jTable1.setToolTipText("");
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         deleteButton.setText("Delete");
@@ -432,6 +442,53 @@ public class MainFrame extends javax.swing.JFrame {
     private void searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_searchActionPerformed
+
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+        String id = null;
+        if (checkFields()) {
+            try {
+                id = model.getValueAt(jTable1.getSelectedRow(), 0).toString();
+            } catch (ArrayIndexOutOfBoundsException e) {
+                JOptionPane.showMessageDialog(this, "Please select a row");
+                return;
+            }
+            try {
+                String firstName = this.firstName.getText().trim();
+                String lastName = this.lastName.getText().trim();
+                String gender = getGender();  
+                int age = Integer.parseInt(this.age.getText().trim());
+                String phoneNum = this.phone.getText().trim();
+                String department = this.department.getSelectedItem().toString();
+
+                Employee employee = new Employee(firstName, lastName, gender, age, phoneNum, department);
+                EmployeeDAO employeeDAO = new EmployeeDAO();
+                employeeDAO.editEmployee(employee, id);
+
+                displayData();
+                clearTextFields();
+                JOptionPane.showMessageDialog(this, "Employee edited sucessfully");
+                } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            }
+
+        }
+// TODO add your handling code here:
+    }//GEN-LAST:event_editButtonActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        firstName.setText(model.getValueAt(jTable1.getSelectedRow(), 1).toString());
+        lastName.setText(model.getValueAt(jTable1.getSelectedRow(), 2).toString());
+        age.setText(model.getValueAt(jTable1.getSelectedRow(), 4).toString());
+        phone.setText(model.getValueAt(jTable1.getSelectedRow(), 5).toString());
+        String gender = model.getValueAt(jTable1.getSelectedRow(), 3).toString();
+        if(gender.equals("Male")){
+            maleButton.setSelected(true);
+        } else {
+            femaleButton.setSelected(true);
+        }
+        department.setSelectedItem(model.getValueAt(jTable1.getSelectedRow(), 6).toString());
+        addButton.setEnabled(false);// TODO add your handling code here:
+    }//GEN-LAST:event_jTable1MouseClicked
 
     private String getGender(){
         if(maleButton.isSelected()){

@@ -53,5 +53,16 @@ public class SQLiteConnection {
             System.err.println(e.getMessage());
         }
     }
+    
+    public void updateData(String[] values, String id) {
+        try {
+            Statement stmt = conn.createStatement();
+            String updateQuery = "UPDATE Employees SET First_name = '" + values[0] + "', Last_name = '" + values[1] + "', Gender = '" + values[2] + "', Age = '" + values[3] + "', Phone_number = '" + values[4] + "', Department = '" + values[5] + "'  WHERE id = " + id;
+            stmt.executeUpdate(updateQuery);
+            stmt.close();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
+        }
 
-}
