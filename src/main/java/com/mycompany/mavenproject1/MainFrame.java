@@ -12,12 +12,16 @@ import java.sql.*;
 
 
 public class MainFrame extends javax.swing.JFrame {
+    private DefaultTableModel model;
+    private EmployeeDAO employeeDAO;
 
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
+        model = (DefaultTableModel) jTable1.getModel();
+        displayData();
     }
     class JpanelGradient extends JPanel{
         protected void paintComponent(Graphics g){
@@ -62,9 +66,10 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jScrollBar1 = new javax.swing.JScrollBar();
         deleteButton = new javax.swing.JButton();
         exitButton = new javax.swing.JButton();
+        search = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -97,7 +102,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         deptLabel.setText("Department");
 
-        department.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        department.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "IT", "Finance", "Marketing", "Sales" }));
         department.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 departmentActionPerformed(evt);
@@ -240,6 +245,14 @@ public class MainFrame extends javax.swing.JFrame {
 
         exitButton.setText("Exit");
 
+        search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Search");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -247,27 +260,33 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(leftPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 651, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(deleteButton)
                         .addGap(18, 18, 18)
                         .addComponent(exitButton)
-                        .addGap(41, 41, 41))))
+                        .addGap(41, 41, 41))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 651, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(22, 22, 22))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(leftPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(60, 60, 60)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
-                    .addComponent(jScrollBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(26, 26, 26)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(deleteButton)
@@ -297,15 +316,13 @@ public class MainFrame extends javax.swing.JFrame {
 
      private void displayData() {
         // Clear the existing rows in the table
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         
         model.setRowCount(0);
         
         // Retrieve data from the database and populate the table
         try {
-            SQLiteConnection conn = new SQLiteConnection();
-            conn.connect();
-            ResultSet rs = conn.executeQuery("SELECT * FROM Employees");
+            EmployeeDAO employeeDAO = new EmployeeDAO();
+            ResultSet rs = employeeDAO.getEmployees();
 
             while (rs.next()) {
                 String id = rs.getString("id");
@@ -319,8 +336,7 @@ public class MainFrame extends javax.swing.JFrame {
                 model.addRow(new Object[]{id, firstName, lastName, gender, age, phoneNum, dept});
             }
 
-            rs.close();
-            conn.disconnect();
+            employeeDAO.close();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         } catch (Exception e){
@@ -328,44 +344,66 @@ public class MainFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }
+     
+    private boolean checkFields() {
+        String firstName = this.firstName.getText().trim();
+        String lastName = this.lastName.getText().trim();
+        String gender = getGender();
+        String age = this.age.getText().trim();
+        String phoneNum = this.phone.getText().trim();
+        String department = this.department.getSelectedItem().toString();
+
+        if (firstName.isEmpty() || lastName.isEmpty() || gender == null || age.isEmpty() || phoneNum.isEmpty()
+                || department.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all the fields.");
+            return false;
+        }
+        
+        try {
+            int ageValue = Integer.parseInt(age);
+            if (ageValue <= 17) {
+                JOptionPane.showMessageDialog(this, "Age must be at least 18.");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Age must be a valid number.");
+            return false;
+        }
+
+        return true;
+    }
+    
+    private void clearTextFields() {
+        firstName.setText("");
+        lastName.setText("");
+        gender.clearSelection();
+        age.setText("");
+        phone.setText("");
+        department.setSelectedIndex(0);
+    }
 
     
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-        
-        String firstN, lastN, gender, ag, phoneNum, dept;
-//        String query = "INSERT INTO employee(First_name,Last_name, Gender, department) VALUES (?,?,?,?)";
-//        String[] columns = {"First_name", "Last_name", "Gender", "Age", "Phone_number", "Department"};
-        
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.addRow(new Object[]{firstName.getText(), lastName.getText(), getGender(), age.getText(), phone.getText(), department.getSelectedItem()});
-        if(model.getRowCount()==0){
-            JOptionPane.showMessageDialog(this, "Empty");
-        }else {
-            System.out.println(model.getRowCount());
-        
-        firstN = model.getValueAt(model.getRowCount()-1, 0).toString();
-        lastN = model.getValueAt(model.getRowCount()-1, 1).toString();
-        gender = model.getValueAt(model.getRowCount()-1, 2).toString(); 
-        ag = model.getValueAt(model.getRowCount()-1, 3).toString();
-        phoneNum =model.getValueAt(model.getRowCount()-1, 4).toString();
-        dept = model.getValueAt(model.getRowCount()-1, 5).toString();
-        String[] values = {firstN, lastN, gender, ag, phoneNum, dept};
+        if (checkFields()) {
+            try {
+                String firstName = this.firstName.getText().trim();
+                String lastName = this.lastName.getText().trim();
+                String gender = getGender();
+                int age = Integer.parseInt(this.age.getText().trim());
+                String phoneNum = this.phone.getText().trim();
+                String department = this.department.getSelectedItem().toString();
 
- 
-        SQLiteConnection conn = new SQLiteConnection();
-        
-        try{
-            conn.connect();
-            conn.insertData(values);
-        } catch (Exception e){
-            JOptionPane.showMessageDialog(this, e.getMessage());
-        } finally {
-            conn.disconnect();
-        }
-        }
-        
-        displayData();
+                Employee employee = new Employee(firstName, lastName, gender, age, phoneNum, department);
+                EmployeeDAO employeeDAO = new EmployeeDAO();
+                employeeDAO.addEmployee(employee);
 
+                displayData();
+                clearTextFields();
+                JOptionPane.showMessageDialog(this, "Employee saved successfully.");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            }
+        }
         
         
         
@@ -390,6 +428,10 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         displayData();
     }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_searchActionPerformed
 
     private String getGender(){
         if(maleButton.isSelected()){
@@ -453,8 +495,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel firstNameLabel;
     private javax.swing.ButtonGroup gender;
     private javax.swing.JLabel genderLabel;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JScrollBar jScrollBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField lastName;
@@ -463,5 +505,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JRadioButton maleButton;
     private javax.swing.JTextField phone;
     private javax.swing.JLabel phoneLabel;
+    private javax.swing.JTextField search;
     // End of variables declaration//GEN-END:variables
 }
