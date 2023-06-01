@@ -436,7 +436,26 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         // TODO add your handling code here:
-        displayData();
+        String id = null;
+        try {
+            id = model.getValueAt(jTable1.getSelectedRow(), 0).toString();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            JOptionPane.showMessageDialog(this, "Please select a row");
+        }
+        if (!id.equals(null)) {
+            int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this employee info?",
+                    "Delete", JOptionPane.YES_NO_OPTION);
+
+            if (choice == JOptionPane.YES_OPTION) {
+                EmployeeDAO employeeDAO = new EmployeeDAO();
+                employeeDAO.deleteEmployee(id);
+
+                displayData();
+                clearTextFields();
+                JOptionPane.showMessageDialog(this, "Employee deleted sucessfully");
+
+            }
+        }
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchActionPerformed

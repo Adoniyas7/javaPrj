@@ -47,7 +47,15 @@ public class EmployeeDAO {
             conn.disconnect();
         }
     }
-
+    public void deleteEmployee(String id) {
+        try {
+            conn.deleteData(id);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            conn.disconnect();
+        }
+    }
     public void close() {
         conn.disconnect();
     }

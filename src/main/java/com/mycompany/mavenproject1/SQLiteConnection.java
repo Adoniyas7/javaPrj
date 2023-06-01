@@ -64,5 +64,15 @@ public class SQLiteConnection {
             System.err.println(e.getMessage());
         }
     }
+    public void deleteData(String id) {
+        try {
+            Statement stmt = conn.createStatement();
+            String deleteQuery = "DELETE FROM Employees WHERE id = " + id;
+            stmt.executeUpdate(deleteQuery);
+            stmt.close();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
+    }
+}
 
