@@ -449,7 +449,8 @@ public class MainFrame extends javax.swing.JFrame {
         try {
             id = model.getValueAt(jTable1.getSelectedRow(), 0).toString();
         } catch (ArrayIndexOutOfBoundsException e) {
-            JOptionPane.showMessageDialog(this, "Please select a row");
+           JOptionPane.showMessageDialog(this, "Please select a row");
+           return;
         }
         if (!id.equals(null)) {
             int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this employee info?",
