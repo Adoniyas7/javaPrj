@@ -9,6 +9,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
+import javax.swing.RowFilter;
+import javax.swing.table.TableRowSorter;
 
 
 public class MainFrame extends javax.swing.JFrame {
@@ -75,7 +77,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         firstNameLabel.setText("First name");
 
-        firstName.setText("Name");
         firstName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 firstNameActionPerformed(evt);
@@ -84,7 +85,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         lastNameLabel.setText("Last name");
 
-        lastName.setText("Last name");
         lastName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lastNameActionPerformed(evt);
@@ -93,7 +93,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         ageLabel.setText("Age");
 
-        age.setText("dob");
         age.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ageActionPerformed(evt);
@@ -145,7 +144,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         phoneLabel.setText("Phone number");
 
-        phone.setText("Phone number");
+        phone.setText("+251");
         phone.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 phoneActionPerformed(evt);
@@ -254,10 +253,20 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         exitButton.setText("Exit");
+        exitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitButtonActionPerformed(evt);
+            }
+        });
 
         search.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchActionPerformed(evt);
+            }
+        });
+        search.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchKeyReleased(evt);
             }
         });
 
@@ -390,8 +399,9 @@ public class MainFrame extends javax.swing.JFrame {
         age.setText("");
         phone.setText("");
         department.setSelectedIndex(0);
+        jTable1.clearSelection();
+        addButton.setEnabled(true);
     }
-
     
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         if (checkFields()) {
@@ -426,8 +436,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         // TODO add your handling code here:
-        System.out.println("dir: " + System.getProperty("user.dir"));
-        getGender();
+        clearTextFields();
     }//GEN-LAST:event_clearButtonActionPerformed
 
     private void phoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phoneActionPerformed
@@ -508,6 +517,16 @@ public class MainFrame extends javax.swing.JFrame {
         department.setSelectedItem(model.getValueAt(jTable1.getSelectedRow(), 6).toString());
         addButton.setEnabled(false);// TODO add your handling code here:
     }//GEN-LAST:event_jTable1MouseClicked
+
+    private void searchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchKeyReleased
+        TableRowSorter<DefaultTableModel> rowSorter = new TableRowSorter<>(model);
+        jTable1.setRowSorter(rowSorter);
+        rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + search.getText()));        // TODO add your handling code here:
+    }//GEN-LAST:event_searchKeyReleased
+
+    private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
+        System.exit(0);        // TODO add your handling code here:
+    }//GEN-LAST:event_exitButtonActionPerformed
 
     private String getGender(){
         if(maleButton.isSelected()){
